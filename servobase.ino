@@ -31,6 +31,10 @@ int cursor_x = 20;
 #define DT3 32
 #define CLK4 26
 #define DT4 25
+#define SW1 19
+#define SW2 18
+#define SW3 5
+#define SW4 17
 int counter1 = 90;
 int counter2 = 90;
 int counter3 = 90;
@@ -44,9 +48,9 @@ int clk3StateLast = clk1StateCurrent;
 int clk4StateCurrent = LOW;
 int clk4StateLast = clk2StateCurrent;
 #define SPEEDPIN 6
-char speedLable[] = {'S', 'M', 'F'};
-int speed[] = {1,3,6};
-int currentSpeed[] = {1,1,1,1};
+char speedLable[] = { 'S', 'M', 'F' };
+int speed[] = { 1, 3, 6 };
+int currentSpeed[] = { 1, 1, 1, 1 };
 
 void setup() {
   Serial.begin(9600);
@@ -58,6 +62,10 @@ void setup() {
   pinMode(DT3, INPUT);
   pinMode(CLK4, INPUT);
   pinMode(DT4, INPUT);
+  pinMode(SW1, INPUT_PULLUP);
+  pinMode(SW2, INPUT_PULLUP);
+  pinMode(SW3, INPUT_PULLUP);
+  pinMode(SW4, INPUT_PULLUP);
 
   clk1StateLast = digitalRead(CLK1);
   clk2StateLast = digitalRead(CLK2);
@@ -68,6 +76,10 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(DT2), update2, CHANGE);
   attachInterrupt(digitalPinToInterrupt(DT3), update3, CHANGE);
   attachInterrupt(digitalPinToInterrupt(DT4), update4, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(SW1), updateSpeed1, FALLING);
+  attachInterrupt(digitalPinToInterrupt(SW2), updateSpeed2, FALLING);
+  attachInterrupt(digitalPinToInterrupt(SW3), updateSpeed3, FALLING);
+  attachInterrupt(digitalPinToInterrupt(SW4), updateSpeed4, FALLING);
 
   Wire.begin();
 
@@ -126,7 +138,6 @@ void loop() {
   servo2.write(counter2);
   servo3.write(counter3);
   servo4.write(counter4);
-
 }
 
 void writeOled(int position, int counter) {
@@ -213,15 +224,42 @@ void update4() {
   clk4StateLast = clk4StateCurrent;
 }
 
-void updateSpeed(){
-  // delay(1);
-  // if (digitalRead(SPEEDPIN)==HIGH){
-  // if (currentSpeed == 2) {
-  //   currentSpeed = 0;
-  // } else {
-  //   currentSpeed ++;
-  // }}
+void updateSpeed1() {
+  if (digitalRead(SW1)==LOW){
+  if (currentSpeed[0] == 2) {
+    currentSpeed[0] = 0;
+  } else {
+    currentSpeed[0] ++;
+  }}
 }
+
+void updateSpeed2() {
+  if (digitalRead(SW2)==LOW){
+  if (currentSpeed[1] == 2) {
+    currentSpeed[1] = 0;
+  } else {
+    currentSpeed[1] ++;
+  }}
+}
+
+void updateSpeed3() {
+  if (digitalRead(SW3)==LOW){
+  if (currentSpeed[2] == 2) {
+    currentSpeed[2] = 0;
+  } else {
+    currentSpeed[2] ++;
+  }}
+}
+
+void updateSpeed4() {
+  if (digitalRead(SW4)==LOW){
+  if (currentSpeed[3] == 2) {
+    currentSpeed[3] = 0;
+  } else {
+    currentSpeed[3] ++;
+  }}
+}
+
 
 void multiplexSelect(uint8_t i) {
   if (i > 7) return;
